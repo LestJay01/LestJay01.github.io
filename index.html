@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lester — Security Blog</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0e0d;
+    --surface: #161615;
+    --surface2: #1e1e1c;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #e8e6e1;
+    --muted: #6b6b68;
+    --muted2: #4a4a47;
+    --accent: #378add;
+    --accent-bg: #042c53;
+    --accent-text: #85b7eb;
+    --green-bg: #173404;
+    --green-text: #97c459;
+    --amber-bg: #412402;
+    --amber-text: #ef9f27;
+    --coral-bg: #4a1b0c;
+    --coral-text: #f0997b;
+    --purple-bg: #26215c;
+    --purple-text: #afa9ec;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 2rem; background: var(--surface); border-bottom: 0.5px solid var(--border); position: sticky; top: 0; z-index: 10; }
+  .nav-logo { font-weight: 500; font-size: 15px; color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { font-size: 14px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); font-weight: 500; }
+
+  main { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+  .page { display: none; }
+  .page.visible { display: block; }
+
+  .home-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 0.5px solid var(--border); }
+  .home-header h1 { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 0.4rem; }
+  .home-header p { color: var(--muted); font-size: 14px; max-width: 480px; line-height: 1.7; margin-bottom: 1.1rem; }
+  .home-links { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 6px 13px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); background: var(--surface2); color: var(--muted); text-decoration: none; transition: all 0.15s; cursor: pointer; }
+  .btn:hover { color: var(--text); border-color: var(--border-hover); }
+  .btn i { font-size: 13px; }
+  .btn-primary { background: var(--text); color: #0e0e0d; border-color: transparent; font-weight: 500; }
+  .btn-primary:hover { background: #ccc; color: #0e0e0d; }
+
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-btn { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: 0.5px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { color: var(--text); border-color: var(--border-hover); }
+  .filter-btn.active { background: var(--text); color: #0e0e0d; border-color: transparent; font-weight: 500; }
+
+  .post-featured { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s; display: block; color: inherit; text-decoration: none; }
+  .post-featured:hover { border-color: var(--border-hover); }
+  .post-featured-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 8px; }
+  .post-featured h2 { font-size: 17px; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.4; color: var(--text); }
+  .post-featured p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
+  .post-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .post-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
+  .post-stats i { font-size: 13px; vertical-align: -2px; }
+
+  .post-list { display: flex; flex-direction: column; gap: 8px; }
+  .post-item { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.1rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: border-color 0.15s; text-decoration: none; color: inherit; }
+  .post-item:hover { border-color: var(--border-hover); }
+  .post-item-body { flex: 1; min-width: 0; }
+  .post-item-body h3 { font-size: 13px; font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+  .post-item-body p { font-size: 12px; color: var(--muted); }
+  .post-item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .badge-blue { background: var(--accent-bg); color: var(--accent-text); }
+  .badge-green { background: var(--green-bg); color: var(--green-text); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+  .badge-coral { background: var(--coral-bg); color: var(--coral-text); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
+  .diff-easy { background: var(--green-bg); color: var(--green-text); font-size:11px; padding:3px 9px; border-radius:20px; font-weight:500; }
+  .diff-medium { background: var(--amber-bg); color: var(--amber-text); font-size:11px; padding:3px 9px; border-radius:20px; font-weight:500; }
+  .diff-hard { background: var(--coral-bg); color: var(--coral-text); font-size:11px; padding:3px 9px; border-radius:20px; font-weight:500; }
+
+  .divider { height: 0.5px; background: var(--border); margin: 2.5rem 0; }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 1.25rem; }
+
+  .about-hero { margin-bottom: 2.5rem; }
+  .about-hero h1 { font-size: 1.5rem; font-weight: 500; margin-bottom: 0.5rem; }
+  .about-hero p { color: var(--muted); font-size: 14px; line-height: 1.75; max-width: 520px; margin-bottom: 1.25rem; }
+  .about-links { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .skill-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; }
+  .skill-top { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .skill-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+  .skill-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .skill-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .tools-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tool-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 20px; padding: 4px 11px; color: var(--muted); }
+
+  .profiles-list { display: flex; flex-direction: column; gap: 8px; }
+  .profile-item { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+  .profile-left { display: flex; align-items: center; gap: 10px; }
+  .profile-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .profile-sub { font-size: 12px; color: var(--muted); }
+
+  .contact-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.4rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .contact-text h3 { font-size: 15px; font-weight: 500; margin-bottom: 3px; color: var(--text); }
+  .contact-text p { font-size: 13px; color: var(--muted); }
+
+  .cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); margin-left: 2px; vertical-align: -2px; animation: blink 1.1s step-end infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="return showPage('home', event)">lester.sec<span class="cursor"></span></a>
+  <div class="nav-links">
+    <a href="#" onclick="return showPage('home', event)" class="active" id="nav-home">Blog</a>
+    <a href="#" onclick="return showPage('about', event)" id="nav-about">About</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ══ BLOG PAGE ══ -->
+  <div class="page visible" id="page-home">
+    <div class="home-header">
+      <h1>Security writeups & research</h1>
+      <p>Notes from HackTheBox machines, CTF challenges, and vulnerability research. Written by Lester.</p>
+      <div class="home-links">
+        <!-- REPLACE with your actual GitHub/Twitter URLs -->
+        <a href="https://github.com/YOUR_USERNAME" class="btn" target="_blank"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</a>
+        <a href="https://twitter.com/YOUR_USERNAME" class="btn" target="_blank"><i class="ti ti-brand-twitter" aria-hidden="true"></i> Twitter</a>
+        <a href="/rss.xml" class="btn"><i class="ti ti-rss" aria-hidden="true"></i> RSS</a>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterPosts('all', this)">All</button>
+      <button class="filter-btn" onclick="filterPosts('htb', this)">HackTheBox</button>
+      <button class="filter-btn" onclick="filterPosts('ctf', this)">CTF</button>
+      <button class="filter-btn" onclick="filterPosts('research', this)">Research</button>
+    </div>
+
+    <!-- FEATURED POST — replace href with the path to your writeup file e.g. /writeups/silentium.html -->
+    <a href="/writeups/silentium.html" class="post-featured" data-tag="htb">
+      <div class="post-featured-meta">
+        <div style="display:flex;gap:6px;">
+          <span class="badge badge-coral">HackTheBox</span>
+          <span class="diff-hard">Hard</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);">Jun 2026</span>
+      </div>
+      <h2>Silentium — vhost discovery to RCE via SSRF chain</h2>
+      <p>A full walkthrough covering initial recon, vhost enumeration, exploiting an internal SSRF endpoint, and pivoting to command execution via a vulnerable internal Redis service using Gopher payloads.</p>
+      <div class="post-footer">
+        <div class="post-stats">
+          <span><i class="ti ti-clock"></i> 8 min read</span>
+          <span><i class="ti ti-tag"></i> SSRF · recon · RCE</span>
+        </div>
+        <span style="font-size:12px;color:var(--accent);font-weight:500;">Read writeup <i class="ti ti-arrow-right" style="font-size:12px;vertical-align:-1px;" aria-hidden="true"></i></span>
+      </div>
+    </a>
+
+    <!-- POST LIST — add more posts by copying a .post-item block -->
+    <div class="post-list">
+      <a href="/writeups/ssrf-redis-rce.html" class="post-item" data-tag="research">
+        <div class="post-item-body">
+          <h3>SSRF to RCE — exploiting internal Redis via Gopher protocol</h3>
+          <p>May 2026 · 6 min read</p>
+        </div>
+        <div class="post-item-right">
+          <span class="badge badge-purple">Research</span>
+          <i class="ti ti-arrow-right" style="color:var(--muted2);font-size:14px;" aria-hidden="true"></i>
+        </div>
+      </a>
+      <a href="/writeups/dll-hijack.html" class="post-item" data-tag="ctf">
+        <div class="post-item-body">
+          <h3>Path traversal + DLL hijacking privilege escalation chain</h3>
+          <p>Apr 2026 · 5 min read</p>
+        </div>
+        <div class="post-item-right">
+          <span class="diff-medium">Medium</span>
+          <i class="ti ti-arrow-right" style="color:var(--muted2);font-size:14px;" aria-hidden="true"></i>
+        </div>
+      </a>
+      <a href="/writeups/hta-dropper.html" class="post-item" data-tag="research">
+        <div class="post-item-body">
+          <h3>Analysing a VBScript HTA dropper — static & dynamic breakdown</h3>
+          <p>Mar 2026 · 7 min read</p>
+        </div>
+        <div class="post-item-right">
+          <span class="badge badge-blue">Research</span>
+          <i class="ti ti-arrow-right" style="color:var(--muted2);font-size:14px;" aria-hidden="true"></i>
+        </div>
+      </a>
+      <a href="/writeups/buffer-overflow.html" class="post-item" data-tag="htb">
+        <div class="post-item-body">
+          <h3>HackTheBox — buffer overflow exploitation notes</h3>
+          <p>Feb 2026 · 9 min read</p>
+        </div>
+        <div class="post-item-right">
+          <span class="diff-hard">Hard</span>
+          <i class="ti ti-arrow-right" style="color:var(--muted2);font-size:14px;" aria-hidden="true"></i>
+        </div>
+      </a>
+      <a href="/writeups/percent-encoding.html" class="post-item" data-tag="ctf">
+        <div class="post-item-body">
+          <h3>Web CTF: percent-encoding filter bypass techniques</h3>
+          <p>Jan 2026 · 4 min read</p>
+        </div>
+        <div class="post-item-right">
+          <span class="diff-easy">Easy</span>
+          <i class="ti ti-arrow-right" style="color:var(--muted2);font-size:14px;" aria-hidden="true"></i>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══ ABOUT PAGE ══ -->
+  <div class="page" id="page-about">
+    <div class="about-hero">
+      <h1>Hey, I'm Lester.</h1>
+      <p>Security researcher focused on penetration testing, CTF challenges, and web application security. I document everything I learn here — both for myself and anyone else working through the same problems.</p>
+      <div class="about-links">
+        <!-- REPLACE resume.pdf with the actual path to your resume file -->
+        <a href="/resume.pdf" class="btn btn-primary" target="_blank"><i class="ti ti-file-text" aria-hidden="true"></i> Resume</a>
+        <a href="https://github.com/YOUR_USERNAME" class="btn" target="_blank"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</a>
+        <a href="https://twitter.com/YOUR_USERNAME" class="btn" target="_blank"><i class="ti ti-brand-twitter" aria-hidden="true"></i> Twitter</a>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom:2.5rem;">
+      <div class="section-label">Skills</div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-top">
+            <div class="skill-icon" style="background:var(--accent-bg);color:var(--accent-text);"><i class="ti ti-world-search" aria-hidden="true"></i></div>
+            <span class="skill-name">Web app security</span>
+          </div>
+          <div class="skill-desc">SSRF, SQLi, XSS, path traversal, auth bypass</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-top">
+            <div class="skill-icon" style="background:var(--coral-bg);color:var(--coral-text);"><i class="ti ti-terminal-2" aria-hidden="true"></i></div>
+            <span class="skill-name">Recon & enumeration</span>
+          </div>
+          <div class="skill-desc">nmap, gobuster, vhost discovery, API fuzzing</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-top">
+            <div class="skill-icon" style="background:var(--purple-bg);color:var(--purple-text);"><i class="ti ti-bug" aria-hidden="true"></i></div>
+            <span class="skill-name">Exploit development</span>
+          </div>
+          <div class="skill-desc">Buffer overflows, DLL hijacking, binary analysis</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-top">
+            <div class="skill-icon" style="background:var(--green-bg);color:var(--green-text);"><i class="ti ti-virus-search" aria-hidden="true"></i></div>
+            <span class="skill-name">Malware analysis</span>
+          </div>
+          <div class="skill-desc">Static & dynamic analysis, VBScript/HTA samples</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-top">
+            <div class="skill-icon" style="background:var(--amber-bg);color:var(--amber-text);"><i class="ti ti-network" aria-hidden="true"></i></div>
+            <span class="skill-name">Network analysis</span>
+          </div>
+          <div class="skill-desc">Packet inspection, protocol fuzzing, pivoting</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-top">
+            <div class="skill-icon" style="background:var(--accent-bg);color:var(--accent-text);"><i class="ti ti-code" aria-hidden="true"></i></div>
+            <span class="skill-name">Scripting & dev</span>
+          </div>
+          <div class="skill-desc">C++, Python, Bash — tooling & automation</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:2.5rem;">
+      <div class="section-label">Tools</div>
+      <div class="tools-row">
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> nmap</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> gobuster</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> Burp Suite</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> curl</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> Wireshark</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> Metasploit</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> ffuf</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> Python</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> Bash</span>
+        <span class="tool-pill"><i class="ti ti-terminal" aria-hidden="true"></i> Visual Studio</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:2.5rem;">
+      <div class="section-label">Platforms</div>
+      <div class="profiles-list">
+        <div class="profile-item">
+          <div class="profile-left">
+            <i class="ti ti-cube" style="font-size:17px;color:var(--accent);" aria-hidden="true"></i>
+            <div>
+              <div class="profile-name">HackTheBox</div>
+              <div class="profile-sub">Active — currently on Silentium</div>
+            </div>
+          </div>
+          <span class="badge badge-blue">Active</span>
+        </div>
+        <div class="profile-item">
+          <div class="profile-left">
+            <i class="ti ti-flag" style="font-size:17px;color:var(--green-text);" aria-hidden="true"></i>
+            <div>
+              <div class="profile-name">CTF competitions</div>
+              <div class="profile-sub">Web, pwn, and forensics</div>
+            </div>
+          </div>
+          <span class="badge badge-green">Competing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Contact</div>
+    <div class="contact-card">
+      <div class="contact-text">
+        <h3>Want to collaborate or connect?</h3>
+        <p>Open to CTF teams, security discussions, and new challenges.</p>
+      </div>
+      <!-- REPLACE with your actual email -->
+      <a href="mailto:you@email.com" class="btn btn-primary"><i class="ti ti-mail" aria-hidden="true"></i> Get in touch</a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function showPage(name, e) {
+    e.preventDefault();
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+    document.getElementById('page-' + name).classList.add('visible');
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('nav-' + name).classList.add('active');
+    return false;
+  }
+
+  function filterPosts(tag, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const featured = document.querySelector('.post-featured');
+    const items = document.querySelectorAll('.post-item');
+    if (tag === 'all') {
+      featured.style.display = 'block';
+      items.forEach(i => i.style.display = 'flex');
+    } else {
+      featured.style.display = featured.dataset.tag === tag ? 'block' : 'none';
+      items.forEach(i => { i.style.display = i.dataset.tag === tag ? 'flex' : 'none'; });
+    }
+  }
+</script>
+</body>
+</html>
